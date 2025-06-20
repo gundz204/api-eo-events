@@ -7,6 +7,8 @@ use App\Models\Event;
 use App\Models\EventRegistration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
@@ -26,13 +28,44 @@ class EventController extends Controller
             'waktu_selesai' => 'required|date|after:waktu_mulai',
             'kuota' => 'required|integer|min:1',
             'mengeluarkan_sertifikat' => 'required|boolean',
-            'image' => 'nullable|string',
             'form_pendaftaran' => 'nullable|string',
             'is_active' => 'boolean',
-            'foto' => 'nullable|string',
+            'image' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            'foto' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $event = Event::create($validated);
+        // Upload file image dan foto jika ada
+        $imagePath = null;
+        $fotoPath = null;
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = Str::random(20) . '.' . $image->getClientOriginalExtension();
+            $image->storeAs('public/uploads/events', $imageName);
+            $imagePath = $imageName;
+        }
+
+        if ($request->hasFile('foto')) {
+            $foto = $request->file('foto');
+            $fotoName = Str::random(20) . '.' . $foto->getClientOriginalExtension();
+            $foto->storeAs('public/uploads/events', $fotoName);
+            $fotoPath = $fotoName;
+        }
+
+        $event = Event::create([
+            'nama' => $validated['nama'],
+            'deskripsi' => $validated['deskripsi'] ?? null,
+            'lokasi' => $validated['lokasi'],
+            'jenis' => $validated['jenis'],
+            'waktu_mulai' => $validated['waktu_mulai'],
+            'waktu_selesai' => $validated['waktu_selesai'],
+            'kuota' => $validated['kuota'],
+            'mengeluarkan_sertifikat' => $validated['mengeluarkan_sertifikat'],
+            'form_pendaftaran' => $validated['form_pendaftaran'] ?? null,
+            'is_active' => $validated['is_active'] ?? 1,
+            'image' => $imagePath,
+            'foto' => $fotoPath,
+        ]);
 
         return response()->json([
             'message' => 'Event berhasil dibuat.',
@@ -59,13 +92,36 @@ class EventController extends Controller
             'waktu_selesai' => 'sometimes|required|date|after:waktu_mulai',
             'kuota' => 'sometimes|required|integer|min:1',
             'mengeluarkan_sertifikat' => 'sometimes|required|boolean',
-            'image' => 'nullable|string',
             'form_pendaftaran' => 'nullable|string',
             'is_active' => 'boolean',
-            'foto' => 'nullable|string',
+            'image' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            'foto' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $event->update($validated);
+        if ($request->hasFile('image')) {
+            if ($event->image && Storage::exists('public/uploads/events/' . $event->image)) {
+                Storage::delete('public/uploads/events/' . $event->image);
+            }
+
+            $image = $request->file('image');
+            $imageName = Str::random(20) . '.' . $image->getClientOriginalExtension();
+            $image->storeAs('public/uploads/events', $imageName);
+            $event->image = $imageName;
+        }
+
+        if ($request->hasFile('foto')) {
+            if ($event->foto && Storage::exists('public/uploads/events/' . $event->foto)) {
+                Storage::delete('public/uploads/events/' . $event->foto);
+            }
+
+            $foto = $request->file('foto');
+            $fotoName = Str::random(20) . '.' . $foto->getClientOriginalExtension();
+            $foto->storeAs('public/uploads/events', $fotoName);
+            $event->foto = $fotoName;
+        }
+
+        $event->fill($validated);
+        $event->save();
 
         return response()->json([
             'message' => 'Event berhasil diperbarui.',
