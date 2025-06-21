@@ -134,7 +134,7 @@ class EventViewController extends Controller
 
         $registrations = EventRegistration::with('event')
             ->where('user_id', $user->id)
-            ->where('status_kehadiran', ['tidak', 'belum'])
+            ->whereIn('status_kehadiran', ['tidak', 'belum'])
             ->get();
 
         return view('events.my_events_registered', [

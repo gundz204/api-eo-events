@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\ParticipantViewController;
 use App\Http\Controllers\AuthViewController;
 use App\Http\Controllers\EventViewController;
 use Illuminate\Support\Facades\Route;
+
 
 
 
@@ -41,8 +43,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/my-events', [EventViewController::class, 'myEventsView'])->name('events.my_events');
     Route::get('/my-events-registered', [EventViewController::class, 'myRegisteredEvents'])->name('events.my_events_registered');
 
-    Route::middleware('admin')->group(function () {
-        Route::get('/events/create', [EventViewController::class, 'create'])->name('events.create');
+    Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+        Route::get('/event/create', [EventViewController::class, 'create'])->name('events.create');
         Route::post('/events', [EventViewController::class, 'store'])->name('events.store');
     });
+});
+
+Route::middleware(['auth:sanctum', 'admin'])->prefix('participants')->group(function () {
+    Route::get('/event/{eventId}', [ParticipantViewController::class, 'index'])->name('participants');
+    Route::post('/{id}/status', [ParticipantViewController::class, 'updateStatus'])->name('participants.update');
+    Route::get('/{id}/scan', [ParticipantViewController::class, 'scanQR'])->name('participants.scan');
+    Route::get('/event/{eventId}/statistic', [ParticipantViewController::class, 'statistic'])->name('participants.statistic');
 });
