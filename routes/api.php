@@ -3,8 +3,10 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\ParticipantController;
+use App\Http\Controllers\Api\SertifikatController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 
 
 
@@ -58,3 +60,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('users')->group(function ()
 });
 
 Route::get('participant/{id}/status', [ParticipantController::class, 'updateStatusWithQRView']);
+
+Route::post('/generate-sertifikat', [SertifikatController::class, 'generate']);
+Route::get('/generate-sertifikat/{user_id}/{event_id}', [SertifikatController::class, 'generateById']);
+
