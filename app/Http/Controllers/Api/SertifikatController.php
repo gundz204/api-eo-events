@@ -79,9 +79,9 @@ class SertifikatController extends Controller
         $event = $registration->event;
 
         // Data untuk barcode (bisa disesuaikan)
-        $barcodeText = "{$user->name} - {$event->nama} - " . date('d F Y', strtotime($event->waktu_mulai));
+        $barcodeText = url('/api/verifikasi-sertifikat/' . $registration->id);
         $barcode = new \Milon\Barcode\DNS2D();
-        $barcode->setStorPath(public_path('barcodes/')); // Optional
+        $barcode->setStorPath(public_path('barcodes/')); 
         $barcodeImg = $barcode->getBarcodePNG($barcodeText, 'QRCODE');
 
         $html = '
