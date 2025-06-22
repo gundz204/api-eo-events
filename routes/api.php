@@ -63,5 +63,5 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('users')->group(function ()
 Route::get('participant/{id}/status', [ParticipantController::class, 'updateStatusWithQRView']);
 
 Route::post('/generate-sertifikat', [SertifikatController::class, 'generate']);
-Route::get('/generate-sertifikat/{user_id}/{event_id}', [SertifikatController::class, 'generateById']);
+Route::get('/generate-sertifikat/{registration_id}', [SertifikatController::class, 'generateByRegistrationId']);
 
