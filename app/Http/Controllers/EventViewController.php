@@ -144,8 +144,6 @@ class EventViewController extends Controller
 
     public function scanQr()
     {
-        $user = Auth::user();
-        $token = $user->api_token;
-        return view('events.scan_qr', compact('token'));
+        return view('events.scan_qr');
     }
 }

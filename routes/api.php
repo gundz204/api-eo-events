@@ -46,9 +46,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
 });
 
 Route::middleware(['auth:sanctum', 'admin'])->prefix('participants')->group(function () {
-    Route::get('/event/{eventId}', [ParticipantController::class, 'index']);
+    Route::get('/{eventId}', [ParticipantController::class, 'index']);
     Route::put('/{id}/status', [ParticipantController::class, 'updateStatus']);
     Route::get('/{id}/status', [ParticipantController::class, 'updateStatusWithQR']);
     Route::get('/{id}/statistic', [ParticipantController::class, 'getEventStatistics']);
     Route::get('/{id}/certificate', [ParticipantController::class, 'generateCertificate']);
 });
+
+Route::get('participant/{id}/status', [ParticipantController::class, 'updateStatusWithQRView']);

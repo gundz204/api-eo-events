@@ -27,7 +27,7 @@
                         </div>
                         <div class="text-center mt-4 mt-md-0">
                             <div class="bg-white p-2 border rounded">
-                                {!! QrCode::size(150)->generate(url('/api/participants/' . $reg->id . '/status')) !!}
+                                {!! QrCode::size(150)->generate(url('/api/participant/' . $reg->id . '/status')) !!}
                             </div>
                         </div>
                     </div>

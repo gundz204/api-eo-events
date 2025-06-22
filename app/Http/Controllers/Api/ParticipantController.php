@@ -83,6 +83,34 @@ class ParticipantController extends Controller
             'data' => $registration
         ]);
     }
+    public function updateStatusWithQRView($id)
+    {
+        $registration = EventRegistration::find($id);
+
+        if (!$registration) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Registrasi tidak ditemukan.'
+            ], 404);
+        }
+
+        if ($registration->status_kehadiran === 'belum') {
+            $registration->status_kehadiran = 'hadir';
+            $registration->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status kehadiran otomatis diubah menjadi HADIR.',
+                'data' => $registration
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Status kehadiran sudah diperbarui sebelumnya.',
+            'data' => $registration
+        ]);
+    }
 
     public function getEventStatistics($eventId)
     {
