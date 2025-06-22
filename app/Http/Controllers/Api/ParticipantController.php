@@ -176,6 +176,7 @@ class ParticipantController extends Controller
 
         $registrations = EventRegistration::with('event')
             ->where('user_id', $user->id)
+            ->where('status_kehadiran', 'hadir')
             ->get();
 
         return response()->json([

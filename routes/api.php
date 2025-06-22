@@ -44,6 +44,7 @@ Route::prefix('events')->group(function () {
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('event/{id}/register', [EventController::class, 'registerToEvent']);
+    Route::get('event/history-events', [ParticipantController::class, 'myEvents']);
     Route::get('event/my-events', [EventController::class, 'myEvents']);
 });
 

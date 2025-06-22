@@ -144,7 +144,7 @@ class EventController extends Controller
 
         $registrations = EventRegistration::with('event')
             ->where('user_id', $user->id)
-            ->where('status_kehadiran', 'hadir')
+            ->whereIn('status_kehadiran', ['belum', 'tidak'])
             ->get();
 
         return response()->json([
@@ -152,6 +152,7 @@ class EventController extends Controller
             'data' => $registrations
         ]);
     }
+
 
     public function registerToEvent(Request $request, $eventId)
     {
