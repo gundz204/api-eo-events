@@ -55,3 +55,5 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('participants')->group(func
     Route::get('/{id}/scan', [ParticipantViewController::class, 'scanQR'])->name('participants.scan');
     Route::get('/event/{eventId}/statistic', [ParticipantViewController::class, 'statistic'])->name('participants.statistic');
 });
+
+Route::get('/event/scan-qr', [EventViewController::class, 'scanQr'])->name('events.scan.qr');

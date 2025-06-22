@@ -141,4 +141,11 @@ class EventViewController extends Controller
             'registrations' => $registrations
         ]);
     }
+
+    public function scanQr()
+    {
+        $user = Auth::user();
+        $token = $user->api_token;
+        return view('events.scan_qr', compact('token'));
+    }
 }
