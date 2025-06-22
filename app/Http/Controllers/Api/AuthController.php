@@ -72,6 +72,17 @@ class AuthController extends Controller
         ]);
     }
 
+    public function getAllUser()
+    {
+        $users = User::all();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Daftar semua user',
+            'data' => $users
+        ]);
+    }
+
     // Logout
     public function logout(Request $request)
     {
