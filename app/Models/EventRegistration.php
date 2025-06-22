@@ -11,12 +11,7 @@ class EventRegistration extends Model
 
     protected $table = 'event_registrations';
 
-    protected $fillable = [
-        'user_id',
-        'event_id',
-        'status_kehadiran',
-        'qr_code_path',
-    ];
+    protected $guarded = [];
 
     // Relasi ke User
     public function user()

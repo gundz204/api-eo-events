@@ -168,4 +168,80 @@ class SertifikatController extends Controller
 
         return $pdf->download($fileName);
     }
+
+    public function verifikasiSertifikat($registration_id)
+    {
+        $registration = EventRegistration::with(['user', 'event'])->find($registration_id);
+
+        if (!$registration) {
+            return response('<h2 style="color:red;text-align:center;margin-top:50px;">Registrasi tidak ditemukan.</h2>', 404);
+        }
+
+        if ($registration->status_kehadiran !== 'hadir') {
+            return response('<h2 style="color:red;text-align:center;margin-top:50px;">Sertifikat tidak valid karena user belum dinyatakan hadir.</h2>', 403);
+        }
+
+        $user = $registration->user;
+        $event = $registration->event;
+
+        $html = '
+    <!DOCTYPE html>
+    <html lang="id">
+    <head>
+        <meta charset="UTF-8">
+        <title>Verifikasi Sertifikat</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f3f3f3;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+            }
+
+            .card {
+                background-color: #fff;
+                padding: 40px;
+                border-radius: 12px;
+                box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                text-align: center;
+                max-width: 600px;
+                width: 100%;
+            }
+
+            .success {
+                color: green;
+                font-size: 24px;
+                font-weight: bold;
+            }
+
+            .info {
+                margin-top: 20px;
+                text-align: left;
+                font-size: 18px;
+            }
+
+            .info p {
+                margin: 6px 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <div class="success">✔ Sertifikat Terverifikasi</div>
+            <div class="info">
+                <p><strong>Nama:</strong> ' . htmlspecialchars($user->name) . '</p>
+                <p><strong>Email:</strong> ' . htmlspecialchars($user->email) . '</p>
+                <p><strong>Nama Event:</strong> ' . htmlspecialchars($event->nama) . '</p>
+                <p><strong>Tanggal Event:</strong> ' . date('d F Y', strtotime($event->waktu_mulai)) . '</p>
+                <p><strong>Status Kehadiran:</strong> Hadir</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    ';
+
+        return response($html);
+    }
 }

@@ -64,3 +64,4 @@ Route::get('participant/{id}/status', [ParticipantController::class, 'updateStat
 
 Route::post('/generate-sertifikat', [SertifikatController::class, 'generate']);
 Route::get('/generate-sertifikat/{registration_id}', [SertifikatController::class, 'generateByRegistrationId']);
+Route::get('/verifikasi-sertifikat/{registration_id}', [SertifikatController::class, 'verifikasiSertifikat']);

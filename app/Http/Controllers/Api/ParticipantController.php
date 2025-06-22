@@ -54,7 +54,6 @@ class ParticipantController extends Controller
             'data' => $registration
         ]);
     }
-
     public function updateStatusWithQR($id)
     {
         $registration = EventRegistration::find($id);
