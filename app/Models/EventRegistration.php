@@ -9,7 +9,7 @@ class EventRegistration extends Model
 {
     use HasFactory;
 
-    protected $table = 'event_registrations';
+    protected $table = 'participants';
 
     protected $guarded = [];
 
