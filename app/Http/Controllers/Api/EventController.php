@@ -178,10 +178,13 @@ class EventController extends Controller
             ], 409);
         }
 
+        $statusPembayaran = strtolower($event->jenis) === 'gratis' ? 'diterima' : 'pending';
+
         $registration = EventRegistration::create([
             'user_id' => $user->id,
             'event_id' => $eventId,
             'status_kehadiran' => 'belum',
+            'status_pembayaran' => $statusPembayaran,
         ]);
 
         return response()->json([
