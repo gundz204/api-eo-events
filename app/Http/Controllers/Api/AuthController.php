@@ -16,29 +16,14 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6',
-            'profile_photo' => 'nullable|file|image|max:2048',
-            'foto' => 'nullable|file|image|max:2048',
         ]);
-
-        $profilePhotoName = null;
-        $fotoName = null;
-
-        if ($request->hasFile('profile_photo')) {
-            $profilePhotoName = uniqid() . '.' . $request->file('profile_photo')->getClientOriginalExtension();
-            $request->file('profile_photo')->storeAs('public/uploads/profile_photos', $profilePhotoName);
-        }
-
-        if ($request->hasFile('foto')) {
-            $fotoName = uniqid() . '.' . $request->file('foto')->getClientOriginalExtension();
-            $request->file('foto')->storeAs('public/uploads/foto', $fotoName);
-        }
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'profile_photo' => $profilePhotoName,
-            'foto' => $fotoName,
+            'profile_photo' => null,
+            'foto' => null,
             'role' => 'peserta',
         ]);
 

@@ -7,6 +7,8 @@ use App\Models\Event;
 use App\Models\EventRegistration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class ParticipantController extends Controller
 {
@@ -63,6 +65,14 @@ class ParticipantController extends Controller
                 'success' => false,
                 'message' => 'Registrasi tidak ditemukan.'
             ], 404);
+        }
+
+        if (strtolower($registration->status_pembayaran) !== 'diterima') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Status pembayaran belum diterima. Tidak dapat mengubah status kehadiran.',
+                'data' => $registration
+            ], 403);
         }
 
         if ($registration->status_kehadiran === 'belum') {
@@ -181,6 +191,70 @@ class ParticipantController extends Controller
         return response()->json([
             'success' => true,
             'data' => $registrations
+        ]);
+    }
+
+    public function uploadBuktiPembayaran(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'bukti_pembayaran' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $registration = EventRegistration::find($id);
+
+        if (!$registration) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data registrasi tidak ditemukan.'
+            ], 404);
+        }
+
+        $file = $request->file('bukti_pembayaran');
+        $filename = time() . '_' . $file->getClientOriginalName();
+
+        $path = $file->storeAs('public/uploads/bukti-pembayaran', $filename);
+
+        $registration->bukti_pembayaran = $filename;
+        $registration->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Bukti pembayaran berhasil diunggah.',
+            'data' => [
+                'file_name' => $filename,
+                'file_url' => asset('storage/uploads/bukti-pembayaran/' . $filename),
+                'registration' => $registration
+            ]
+        ]);
+    }
+
+
+    public function updateStatusPembayaran($id)
+    {
+        $registration = EventRegistration::find($id);
+
+        if (!$registration) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data registrasi tidak ditemukan.'
+            ], 404);
+        }
+
+        $registration->status_pembayaran = 'diterima';
+        $registration->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status pembayaran berhasil diperbarui menjadi DITERIMA.',
+            'data' => $registration
         ]);
     }
 }

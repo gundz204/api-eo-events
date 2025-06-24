@@ -39,13 +39,19 @@ Route::prefix('events')->group(function () {
         Route::post('/', [EventController::class, 'store']);
         Route::put('/{id}', [EventController::class, 'update']);
         Route::delete('/{id}', [EventController::class, 'destroy']);
+        Route::get('/peserta-berbayar/{id}', [EventController::class, 'getPesertaEventBerbayar']);
     });
+});
+
+Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+    Route::get('/event-berbayar', [EventController::class, 'getAllEventBerbayar']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('event/{id}/register', [EventController::class, 'registerToEvent']);
     Route::get('event/history-events', [ParticipantController::class, 'myEvents']);
     Route::get('event/my-events', [EventController::class, 'myEvents']);
+    Route::post('/upload-bukti-pembayaran/{id}', [ParticipantController::class, 'uploadBuktiPembayaran']);
 });
 
 Route::middleware(['auth:sanctum', 'admin'])->prefix('participants')->group(function () {
@@ -54,6 +60,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('participants')->group(func
     Route::get('/{id}/status', [ParticipantController::class, 'updateStatusWithQR']);
     Route::get('/{id}/statistic', [ParticipantController::class, 'getEventStatistics']);
     Route::get('/{id}/certificate', [ParticipantController::class, 'generateCertificate']);
+    Route::get('/{id}/pembayaran-done', [ParticipantController::class, 'updateStatusPembayaran']);
 });
 
 Route::middleware(['auth:sanctum', 'admin'])->prefix('users')->group(function () {

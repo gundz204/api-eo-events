@@ -193,4 +193,46 @@ class EventController extends Controller
             'data' => $registration
         ], 201);
     }
+
+    public function getPesertaEventBerbayar($eventId)
+    {
+        $event = Event::where('id', $eventId)
+            ->where('jenis', 'berbayar')
+            ->first();
+
+        if (!$event) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Event tidak ditemukan atau bukan event berbayar.'
+            ], 404);
+        }
+
+        $registrations = EventRegistration::with('user')
+            ->where('event_id', $eventId)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Daftar peserta event berbayar.',
+            'data' => $registrations
+        ]);
+    }
+
+    public function getAllEventBerbayar()
+    {
+        $events = Event::where('jenis', 'berbayar')->get();
+
+        if ($events->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada event berbayar yang ditemukan.'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Daftar event berbayar.',
+            'data' => $events
+        ]);
+    }
 }
