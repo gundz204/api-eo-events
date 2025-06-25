@@ -40,6 +40,7 @@ Route::prefix('events')->group(function () {
         Route::put('/{id}', [EventController::class, 'update']);
         Route::delete('/{id}', [EventController::class, 'destroy']);
         Route::get('/peserta-berbayar/{id}', [EventController::class, 'getPesertaEventBerbayar']);
+        Route::get('/peserta-berbayar-html/{id}', [EventController::class, 'getPesertaEventBerbayarHTML']);
     });
 });
 

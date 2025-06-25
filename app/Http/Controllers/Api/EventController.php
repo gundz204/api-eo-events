@@ -218,6 +218,67 @@ class EventController extends Controller
         ]);
     }
 
+    public function getPesertaEventBerbayarHTML($eventId)
+    {
+        $event = Event::where('id', $eventId)
+            ->where('jenis', 'berbayar')
+            ->first();
+
+        if (!$event) {
+            return response("<h2>Event tidak ditemukan atau bukan event berbayar.</h2>", 404)
+                ->header('Content-Type', 'text/html');
+        }
+
+        $registrations = EventRegistration::with('user')
+            ->where('event_id', $eventId)
+            ->get();
+
+        // Bangun HTML string manual
+        $html = "
+        <h1>Peserta Event: {$event->judul}</h1>
+        <table border='1' cellpadding='8' cellspacing='0'>
+            <thead>
+                <tr>
+                    <th>Nama</th>
+                    <th>Email</th>
+                    <th>Status Kehadiran</th>
+                    <th>Status Pembayaran</th>
+                    <th>Bukti Pembayaran</th>
+                </tr>
+            </thead>
+            <tbody>
+    ";
+
+        foreach ($registrations as $reg) {
+            $nama = htmlspecialchars($reg->user->name);
+            $email = htmlspecialchars($reg->user->email);
+            $kehadiran = htmlspecialchars($reg->status_kehadiran);
+            $statusBayar = htmlspecialchars($reg->status_pembayaran);
+            $bukti = $reg->bukti_pembayaran
+                ? "<a href='" . asset("storage/uploads/bukti-pembayaran/{$reg->bukti_pembayaran}") . "' target='_blank'>Lihat</a>"
+                : "Tidak ada";
+
+            $html .= "
+            <tr>
+                <td>{$nama}</td>
+                <td>{$email}</td>
+                <td>{$kehadiran}</td>
+                <td>{$statusBayar}</td>
+                <td>{$bukti}</td>
+            </tr>
+        ";
+        }
+
+        if (count($registrations) === 0) {
+            $html .= "<tr><td colspan='5'>Belum ada peserta.</td></tr>";
+        }
+
+        $html .= "</tbody></table>";
+
+        return response($html)->header('Content-Type', 'text/html');
+    }
+
+
     public function getAllEventBerbayar()
     {
         $events = Event::where('jenis', 'berbayar')->get();
